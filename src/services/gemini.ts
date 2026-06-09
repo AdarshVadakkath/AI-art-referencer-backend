@@ -12,7 +12,7 @@ export class GeminiService {
 
     const response = await retryWithBackoff(() =>
       gemini.models.generateContent({
-        model: "gemini-3.1-flash-image",
+        model: "gemini-2.5-flash",
 
         contents: [
           {
@@ -24,23 +24,24 @@ export class GeminiService {
           {
             text: `
 You are a senior environment concept artist.
-
 Analyze this Blender blockout scene.
 
 User Prompt:
 ${prompt ?? "None"}
 
-Return ONLY valid JSON.
+Return ONLY valid JSON with NO additional explanation.
+Every array must contain plain strings only, not objects.
 
 {
-  "environment": "",
-  "materials": [],
-  "lighting": [],
-  "colorPalette": [],
-  "composition": "",
-  "mood": "",
-  "recommendations": []
+  "environment": "string describing the environment",
+  "materials": ["string", "string", "string"],
+  "lighting": ["string", "string", "string"],
+  "colorPalette": ["hex or color name", "hex or color name"],
+  "composition": "string describing composition",
+  "mood": "string describing mood",
+  "recommendations": ["string", "string"]
 }
+
 `,
           },
         ],

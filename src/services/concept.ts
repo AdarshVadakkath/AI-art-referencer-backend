@@ -9,9 +9,10 @@ export const conceptService = {
   generateConcepts: async (
     analysis: SceneAnalysis,
   ): Promise<ReferenceConcept[]> => {
+    console.log("Generating concepts...");
     const response = await retryWithBackoff(() =>
       gemini.models.generateContent({
-        model: "gemini-3.1-flash-image",
+        model: "gemini-2.5-flash",
 
         contents: `
 You are a senior environment concept artist.
@@ -33,7 +34,7 @@ Return ONLY valid JSON.
 `,
       }),
     );
-
+    console.log("Concepts generated");
     const text = response.text ?? "";
 
     const cleaned = text

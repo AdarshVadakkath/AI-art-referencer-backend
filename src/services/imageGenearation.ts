@@ -3,23 +3,29 @@ import { retryWithBackoff } from "../utils/retryWithBackoff";
 
 export class ImageGenerationService {
   generateImage = async (prompt: string): Promise<string> => {
+    console.log("Starting image generation...");
+
     const response = await retryWithBackoff(() =>
       gemini.models.generateContent({
-        model: "gemini-3.1-flash-image",
-
+        model: "gemini-2.5-flash-image",
         contents: prompt,
+        config: {
+          responseModalities: ["IMAGE", "TEXT"],
+        },
       }),
     );
 
-    const part = response.candidates?.[0]?.content?.parts?.find(
-      (part: any) => part.inlineData,
-    );
+    const parts = response.candidates?.[0]?.content?.parts ?? [];
+    const imagePart = parts.find((part: any) => part.inlineData?.data);
 
-    if (!part?.inlineData?.data) {
-      throw new Error("Failed to generate image");
+    if (!imagePart?.inlineData?.data) {
+      const textPart = parts.find((part: any) => part.text);
+      console.log("No image returned. Text response:", textPart?.text);
+      throw new Error("Model returned text instead of image");
     }
 
-    return part.inlineData.data;
+    console.log("Image generated successfully.");
+    return imagePart.inlineData.data;
   };
 }
 
