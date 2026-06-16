@@ -5,13 +5,16 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch server.ts",
+    "build": "tsc",
     "start": "bun server.ts",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@clerk/express": "^2.1.27",
     "@google/genai": "^2.8.0",
+    "@huggingface/inference": "^4.13.18",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",

@@ -1,11 +1,17 @@
 import { z } from "zod";
 
 export const createProjectSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-
+  title: z.string(),
   prompt: z.string().optional(),
 
-  moods: z.array(z.string()).min(1, "At least one mood is required"),
+  moods: z.preprocess((value) => {
+    if (typeof value === "string") {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return [];
+      }
+    }
+    return value;
+  }, z.array(z.string())),
 });
-
-export type CreateProjectInput = z.infer<typeof createProjectSchema>;

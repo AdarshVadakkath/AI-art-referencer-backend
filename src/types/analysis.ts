@@ -1,17 +1,27 @@
 import { z } from "zod";
 
-const coercedString = z
-  .unknown()
-  .transform((val) => (typeof val === "string" ? val : JSON.stringify(val)));
-
 export const SceneAnalysisSchema = z.object({
   environment: z.string(),
-  materials: z.array(coercedString),
-  lighting: z.array(coercedString),
-  colorPalette: z.array(coercedString),
+
+  cameraAngle: z.string(),
+  cameraHeight: z.string(),
+  perspectiveType: z.string(),
+  focalDirection: z.string(),
+
+  layoutDescription: z.string(),
+
+  dominantStructures: z.array(z.string()),
+
+  mustPreserve: z.array(z.string()),
+
+  materials: z.array(z.string()),
+  lighting: z.array(z.string()),
+  colorPalette: z.array(z.string()),
+
   composition: z.string(),
   mood: z.string(),
-  recommendations: z.array(coercedString),
+
+  recommendations: z.array(z.string()),
 });
 
 export type SceneAnalysis = z.infer<typeof SceneAnalysisSchema>;

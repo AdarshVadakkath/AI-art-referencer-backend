@@ -1,31 +1,23 @@
-import { gemini } from "../config/gemini";
-import { retryWithBackoff } from "../utils/retryWithBackoff";
+import { HfInference } from "@huggingface/inference";
+
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY!);
 
 export class ImageGenerationService {
   generateImage = async (prompt: string): Promise<string> => {
-    console.log("Starting image generation...");
+    console.log("Starting image generation with FLUX...");
 
-    const response = await retryWithBackoff(() =>
-      gemini.models.generateContent({
-        model: "gemini-2.5-flash-image",
-        contents: prompt,
-        config: {
-          responseModalities: ["IMAGE", "TEXT"],
-        },
-      }),
-    );
+    const imageBlob = await hf.textToImage({
+      model: "black-forest-labs/FLUX.1-schnell",
+      inputs: prompt,
+    }) as any;
 
-    const parts = response.candidates?.[0]?.content?.parts ?? [];
-    const imagePart = parts.find((part: any) => part.inlineData?.data);
+    const arrayBuffer = await imageBlob.arrayBuffer();
 
-    if (!imagePart?.inlineData?.data) {
-      const textPart = parts.find((part: any) => part.text);
-      console.log("No image returned. Text response:", textPart?.text);
-      throw new Error("Model returned text instead of image");
-    }
+    const buffer = Buffer.from(arrayBuffer);
 
     console.log("Image generated successfully.");
-    return imagePart.inlineData.data;
+
+    return buffer.toString("base64");
   };
 }
 

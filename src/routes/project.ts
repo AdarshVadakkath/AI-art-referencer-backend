@@ -5,10 +5,22 @@ import { projectController } from "../controller/project";
 import { validate } from "../middleware/validate";
 import { createProjectSchema } from "../validators/project";
 import { catchAsync } from "../utils/catchAsync";
-
 const router = Router();
 
-router.get("/projects", projectController.getProjects.bind(projectController));
+router.get(
+  "/projects",
+  catchAsync(
+    projectController.getProjects.bind(projectController),
+  ),
+);
+router.post(
+  "/projects",
+  upload.single("image"),
+  validate(createProjectSchema),
+  catchAsync(
+    projectController.createProject.bind(projectController),
+  ),
+);
 
 router.get(
   "/projects/:id",
@@ -29,14 +41,10 @@ router.post(
   "/projects/:id/references",
   projectController.generateReference.bind(projectController),
 );
-router.post(
-  "/projects",
-  upload.single("image"),
-  validate(createProjectSchema),
-  catchAsync(projectController.createProject.bind(projectController)),
-);
+
 router.post(
   "/projects/:id/generate",
   projectController.generateProject.bind(projectController),
 );
+
 export default router;

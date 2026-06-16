@@ -107,31 +107,34 @@ class ProjectService {
       project.analysis as any,
     );
 
-    const savedReferences = [];
-
-    for (const concept of concepts) {
-      const imageBase64 = await imageGenerationService.generateImage(
-        concept.prompt,
-      );
-
-      const uploadedImage = await imagekitService.uploadBase64Image(
-        imageBase64,
-        `${concept.name}.png`,
-        "references",
-      );
-
-      const reference = await referenceRepository.create({
-        projectId,
-        conceptName: concept.name,
-        conceptPrompt: concept.prompt,
-        imageUrl: uploadedImage.url,
-      });
-
-      savedReferences.push(reference);
+    if (!concepts.length) {
+      throw new Error("No concepts generated");
     }
 
+    const concept = concepts[0];
+
+    const imageBase64 = await imageGenerationService.generateImage(
+      concept.prompt,
+    );
+
+    console.log("Base64 length:", imageBase64.length);
+
+    const uploadedImage = await imagekitService.uploadBase64Image(
+      imageBase64,
+      `${concept.name}.png`,
+      "references",
+    );
+
+    const reference = await referenceRepository.create({
+      projectId,
+      conceptName: concept.name,
+      conceptPrompt: concept.prompt,
+      imageUrl: uploadedImage.url,
+    });
+
     await projectRepository.updateStatus(projectId, "completed");
-    return savedReferences;
+
+    return [reference];
   };
 }
 
