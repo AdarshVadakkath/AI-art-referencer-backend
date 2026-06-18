@@ -4,9 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "typecheck": "tsc --noEmit",
     "dev": "bun --watch server.ts",
-    "build": "tsc",
-    "start": "bun server.ts",
+    "build": "bun build server.ts --outdir dist --target bun",
+    "start": "bun dist/server.js",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"

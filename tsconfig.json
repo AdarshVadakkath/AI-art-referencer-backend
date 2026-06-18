@@ -13,11 +13,13 @@
 
     "types": ["bun", "node"],
 
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
 
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
 
-  "include": ["src/**/*", "../test-hf.ts"]
+  "include": ["src/**/*"]
 }
